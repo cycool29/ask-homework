@@ -1,5 +1,9 @@
 import tkinter as tk
-from PIL import ImageGrab
+try:
+    from PIL import ImageGrab
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", 'Pillow'])
+    from PIL import ImageGrab
 import datetime
 from items import *
 from tkinter import ttk
