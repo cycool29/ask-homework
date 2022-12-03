@@ -9,7 +9,7 @@ window = tk.Tk()
 window.title("Sistem Kiraan Wang Kedai Buku Chung Ling")
 style = ttk.Style()
 # style.theme_use('clam')
-style.configure("Treeview.Heading", font=('Quicksand Medium', 10))
+style.configure("Treeview.Heading", font=('Comic Sans MS', 10))
 
 screen_width, screen_height = ImageGrab.grab().size
 
@@ -23,9 +23,9 @@ def update_time():
     global time_label
     global order_quantity
     time_label.config(
-        text="Masa: " + str(datetime.datetime.now().strftime("%H:%M:%S") + '\n'), font=("Quicksand", 10))
+        text="Masa: " + str(datetime.datetime.now().strftime("%H:%M:%S") + '\n'), font=("Comic Sans MS", 10))
     date_label.config(
-        text="\nTarikh: " + str(datetime.datetime.now().strftime("%d/%m/%Y")), font=("Quicksand", 10))
+        text="\nTarikh: " + str(datetime.datetime.now().strftime("%d/%m/%Y")), font=("Comic Sans MS", 10))
     # order_quantity.configure(selectforeground="red")
     time_label.after(1000, update_time)
 
@@ -36,8 +36,10 @@ def count_all(event):
     for i in order_list.get_children():
         total = total + int(order_list.item(i)['values'][2])
     print(total)
+    if total_discount > 0:
+        total -= total_discount
     order_total_price.config(text="Jumlah: RM " +
-                             str(total), font=("Quicksand", 15))
+                             str(total), font=("Comic Sans MS", 15))
     total_price = total
     order_total_paid_input.focus_set()
 
@@ -73,62 +75,68 @@ def delete_order(event):
 def clear_order(event):
     order_list.delete(*order_list.get_children())
     order_total_paid_input.delete(0, 'end')
-    order_total_change.config(text="Baki: RM 0", font=("Quicksand", 15))
-    order_total_price.config(text="Jumlah: RM 0", font=("Quicksand", 15))
-    order_total_discount.config(text="Diskaun: RM 0", font=("Quicksand", 15))
+    order_total_change.config(text="Baki: RM 0", font=("Comic Sans MS", 15))
+    order_total_price.config(text="Jumlah: RM 0", font=("Comic Sans MS", 15))
+    order_total_discount.config(text="Diskaun: RM 0", font=("Comic Sans MS", 15))
     order.delete(0, 'end')
     order.focus_set()
 
 
 def count_change(event):
-    paid = order_total_paid_input.get()
-    if int(paid) >= int(total_price):
+    paid = int(order_total_paid_input.get())
+    if paid >= total_price:
         change = paid - total_price
         order_total_change.config(text="Baki: RM " + str(change),
-                                  font=("Quicksand", 15))
+                                  font=("Comic Sans MS", 15))
     else:
         # Create toplevel remind user to pay more
         warning = tk.Toplevel()
         not_enough = tk.Label(
-            warning, text="Bayaran tidak mencukupi.", font=("Quicksand", 15))
+            warning, text="Bayaran tidak mencukupi.", font=("Comic Sans MS", 15))
         top_level_button = tk.Button(warning, text="OK", font=(
-            "Quicksand", 15), command=warning.destroy)
+            "Comic Sans MS", 15), command=warning.destroy)
         not_enough.pack()
         top_level_button.pack()
+        warning.focus_set()
 
 
 def add_discount(event):
+    global total_price
     global total_discount
     discount = discount_code_entry.get()
     total_discount += check_discount(discount)
     order_total_discount.config(
-        text="Diskaun: RM " + str(total_discount), font=("Quicksand", 15))
+        text="Diskaun: RM " + str(total_discount), font=("Comic Sans MS", 15))
+    if total_price > 0:
+        total_price -= total_discount
+        order_total_price.config(text="Jumlah: RM " +
+                             str(total_price), font=("Comic Sans MS", 15))
 
 
 window.state('zoomed')
-title = tk.Label(text="Kedai Buku Chung Ling", font=("Quicksand Medium", 20))
-sub_title = tk.Label(text="Sistem Kiraan Wang\n", font=("Quicksand", 13))
+title = tk.Label(text="\nKedai Buku Chung Ling", font=("Comic Sans MS", 20, "bold"))
+sub_title = tk.Label(text="Sistem Kiraan Wang\n", font=("Comic Sans MS", 13))
 time_label = tk.Label(
-    text="Masa: " + str(datetime.datetime.now().strftime("%H:%M") + '\n'), font=("Quicksand", 10))
+    text="Masa: " + str(datetime.datetime.now().strftime("%H:%M") + '\n'), font=("Comic Sans MS", 10))
 date_label = tk.Label(
-    text="\nTarikh: " + str(datetime.datetime.now().strftime("%d/%m/%Y")), font=("Quicksand", 10))
-order_label = tk.Label(text="      Pesanan: ", font=("Quicksand", 15))
-order = tk.Entry(window, width=20, font=("Quicksand", 13))
+    text="\nTarikh: " + str(datetime.datetime.now().strftime("%d/%m/%Y")), font=("Comic Sans MS", 10))
+order_label = tk.Label(text="      Pesanan: ", font=("Comic Sans MS", 15))
+order = tk.Entry(window, width=20, font=("Comic Sans MS", 13))
 order_quantity = tk.Spinbox(master=window, from_=1, to=100,
-                            textvariable=quantity_var, font=("Quicksand", 13), width=3)
-order_enter = tk.Button(text="Masuk", font=("Quicksand", 13))
-order_delete = tk.Button(text="Padam", font=("Quicksand", 13))
-order_finish = tk.Button(text="Selesai", font=("Quicksand", 13))
-order_next_order = tk.Button(text="Pesanan Baharu", font=("Quicksand", 13))
-order_total_price = tk.Label(text="Jumlah: RM 0", font=("Quicksand", 15))
-order_total_paid_label = tk.Label(text="Bayar:", font=("Quicksand", 15))
-order_total_paid_input = tk.Entry(window, width=10, font=("Quicksand", 13))
-order_total_change = tk.Label(text="Baki: RM 0", font=("Quicksand", 15))
-order_total_discount = tk.Label(text="Diskaun: RM 0", font=("Quicksand", 15))
+                            textvariable=quantity_var, font=("Comic Sans MS", 13), width=3)
+order_enter = tk.Button(text="Masuk", font=("Comic Sans MS", 13))
+order_delete = tk.Button(text="Padam", font=("Comic Sans MS", 13))
+order_finish = tk.Button(text="Selesai", font=("Comic Sans MS", 13))
+order_next_order = tk.Button(text="Pesanan Baharu", font=("Comic Sans MS", 13))
+order_total_price = tk.Label(text="Jumlah: RM 0", font=("Comic Sans MS", 15))
+order_total_paid_label = tk.Label(text="Bayar:", font=("Comic Sans MS", 15))
+order_total_paid_input = tk.Entry(window, width=10, font=("Comic Sans MS", 13))
+order_total_change = tk.Label(text="Baki: RM 0", font=("Comic Sans MS", 15))
+order_total_discount = tk.Label(text="Diskaun: RM 0", font=("Comic Sans MS", 15))
 # window.bind('<Return>', add_order)
 
-discount_code_label = tk.Label(text="Kod Diskaun: ", font=("Quicksand", 15))
-discount_code_entry = tk.Entry(window, font=("Quicksand", 13))
+discount_code_label = tk.Label(text="Kod Diskaun: ", font=("Comic Sans MS", 15))
+discount_code_entry = tk.Entry(window, font=("Comic Sans MS", 13))
 # separator = ttk.Separator(window, orient=tk.VERTICAL,)
 
 
